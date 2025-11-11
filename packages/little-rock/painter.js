@@ -221,8 +221,14 @@ export default class Painter {
 	}
 
 	static #scrollIntoView (painter) {
-		const { x, y } = painter.getLayout(this);
-		Painter.#scrollTo.call(this.ownerDocument.defaultView, painter, x, y);
+		let target = this;
+		for (const ancestor of painter.#getAncestors(this)) {
+			console.log(1, target.toString(), ancestor.toString());
+			const { x, y } = painter.getLayout(target);
+			console.log(2, x, y);
+			Painter.#scrollTo.call(ancestor, painter, x, y);
+			target = ancestor;
+		}
 	}
 
 	static #getDomRect (painter, props, relative, self) {

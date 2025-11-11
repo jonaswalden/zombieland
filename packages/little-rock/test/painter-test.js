@@ -135,6 +135,18 @@ describe('Painter', () => {
 
 				return pendingScroll;
 			});
+
+			it('.scrollIntoView()', () => {
+				const pendingScroll = captureScroll(window);
+
+				element.scrollIntoView();
+				assert.equal(window.scrollX, 50);
+				assert.equal(window.scrollY, 20);
+				assert.equal(window.pageXOffset, 50);
+				assert.equal(window.pageYOffset, 20);
+
+				return pendingScroll;
+			});
 		});
 
 		describe('HTMLElement', () => {
@@ -332,6 +344,33 @@ describe('Painter', () => {
 				pick(childElements[1].getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 20 }
 			);
+		});
+
+		it('scrolling descendant into view paints ancestors', () => {
+			painter.paint(ancestorElement, { height: 400, scrollHeight: 4000 });
+			painter.paint(parentElement, { y: 200, height: 1000, scrollHeight: 4000 });
+			painter.paint(childElements[0], { y: 3400, height: 300 });
+			painter.paint(childElements[1], { y: 3700, height: 300 });
+
+			childElements[1].scrollIntoView();
+			console.log(ancestorElement.scrollTop)
+			console.log(parentElement.scrollTop)
+			console.log(childElements[1].getBoundingClientRect())
+
+			// assert.deepEqual(
+			// 	pick(childElements[0].getBoundingClientRect(), 'y'),
+			// 	{ y: -300 }
+			// );
+			assert.deepEqual(
+				pick(childElements[1].getBoundingClientRect(), 'y'),
+				{ y: 0 }
+			);
+			assert.deepEqual(ancestorElement.scrollTop, 200);
+			assert.deepEqual(parentElement.scrollTop, 3400);
+			// assert.deepEqual(
+			// 	pick(parentElement.getBoundingClientRect(), 'y'),
+			// 	{ y: 20 }
+			// );
 		});
 	});
 
