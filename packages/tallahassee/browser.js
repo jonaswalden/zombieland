@@ -55,7 +55,7 @@ export default class Browser {
 			cookieJar: this.cookieJar,
 			beforeParse: window => {
 				options.painter?.beforeParse(window);
-				options.resources?.beforeParse?.(window);
+				options.resources?.beforeParse?.(window, options.painter);
 				options.beforeParse?.(window);
 			}
 		});

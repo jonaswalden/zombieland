@@ -30,6 +30,7 @@ export default class ReverseProxy {
 	}
 
 	buildForwardingHeaders () {
+		console.log(this.proxyOrigin);
 		const proxyOriginURL = new URL(this.proxyOrigin);
 		const { protocol, host } = proxyOriginURL;
 		const proto = protocol.slice(0, -1);

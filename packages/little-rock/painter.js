@@ -25,7 +25,7 @@ export default class Painter {
 		const { window, stylesheet } = options;
 
 		if (stylesheet)
-			this.stylesheet = options.stylesheet;
+			this.load(stylesheet);
 		if (window)
 			this.init(window);
 	}
@@ -69,6 +69,13 @@ export default class Painter {
 	}
 
 	beforeParse = this.init;
+
+	load (stylesheet) {
+		console.log(0, stylesheet);
+
+		this.stylesheet.add(stylesheet.ruleSheet);
+		console.log(1, this.stylesheet);
+	}
 
 	paint (target, styleChanges, parent) {
 		if (typeof target === 'string') {
