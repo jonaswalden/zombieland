@@ -2,17 +2,14 @@ import assert from 'node:assert/strict';
 import Painter from '../painter.js';
 import pick from 'lodash.pick';
 import Stylesheet from '../stylesheet.js';
-import { Browser } from 'happy-dom';
+import { Window } from 'happy-dom';
 
 describe('Painter', () => {
-	const browser = new Browser();
-
 	describe('Web APIs', () => {
 		let window, element;
 		beforeEach('load DOM', () => {
-			const page = browser.newPage();
-			page.content = '<div>HTMLElement</div>';
-			window = page.mainFrame.window;
+			window = new Window();
+			window.document.write('<div>HTMLElement</div>');
 			element = window.document.querySelector('div');
 		});
 
@@ -282,16 +279,15 @@ describe('Painter', () => {
 	describe('scrolling', () => {
 		let window, ancestorElement, parentElement, childElements;
 		beforeEach('load DOM', () => {
-			const page = browser.newPage();
-			page.content = `
+			window = new Window();
+			window.document.write(`
 				<article>
 					<div>
 						<img>
 						<img>
 					</div>
 				</article>
-			`;
-			window = page.mainFrame.window;
+			`);
 			ancestorElement = window.document.querySelector('article');
 			parentElement = ancestorElement.firstElementChild;
 			childElements = parentElement.children;
@@ -355,9 +351,8 @@ describe('Painter', () => {
 
 	describe('options.stylesheet', () => {
 		before('defaults bounding box values to 0', async () => {
-			const page = browser.newPage();
-			page.content = '<div>HTMLElement</div>';
-			const window = page.mainFrame.window;
+			const window = new Window();
+			window.document.write('<div>HTMLElement</div>');
 			new Painter().init(window);
 
 			const element = window.document.querySelector('div');
@@ -374,12 +369,11 @@ describe('Painter', () => {
 		});
 
 		it('styles multiple elements', async () => {
-			const page = browser.newPage();
-			page.content = `
+			const window = new Window();
+			window.document.write(`
 				<div>HTMLElement</div>
 				<div>HTMLElement</div>
-			`;
-			const window = page.mainFrame.window;
+			`);
 			const stylesheet = new Stylesheet({
 				'*': { x: 50, y: 20, width: 150, height: 250 },
 			});
@@ -401,12 +395,11 @@ describe('Painter', () => {
 		});
 
 		it('compounds multiple matching styles', async () => {
-			const page = browser.newPage();
-			page.content = `
+			const window = new Window();
+			window.document.write(`
 				<h1>A heading</h1>
 				<p>A paragraph…</p>
-			`;
-			const window = page.mainFrame.window;
+			`);
 			const stylesheet = new Stylesheet({
 				'*': { width: 375 },
 				'h1': { height: 36 },
@@ -438,13 +431,12 @@ describe('Painter', () => {
 		});
 
 		it('uses selector specificity to resolve conflicting styles', async () => {
-			const page = browser.newPage();
-			page.content = `
+			const window = new Window();
+			window.document.write(`
 				<h1 id="the-heading" class="heading">
 					A heading
 				</h1>
-			`;
-			const window = page.mainFrame.window;
+			`);
 			const stylesheet = new Stylesheet({
 				'#the-heading': { height: 30 },
 				'h1, h2': { height: 10 },
@@ -458,11 +450,10 @@ describe('Painter', () => {
 		});
 
 		it('element styles supersede stylesheet styles', async () => {
-			const page = browser.newPage();
-			page.content = `
+			const window = new Window();
+			window.document.write(`
 				<div id="element">HTMLElement</div>
-			`;
-			const window = page.mainFrame.window;
+			`);
 			const stylesheet = new Stylesheet({
 				'#element': { width: 100, height: 100 },
 			});
@@ -478,12 +469,11 @@ describe('Painter', () => {
 	describe('.paint', () => {
 		let painter, divs, spans, elements;
 		beforeEach(() => {
-			const page = browser.newPage();
-			page.content = `
+			const window = new Window();
+			window.document.write(`
 				<div>HTMLElement</div>
 				<span>HTMLSpanElement</span>
-			`;
-			const window = page.mainFrame.window;
+			`);
 			painter = new Painter({ window });
 			divs = window.document.querySelectorAll('div');
 			spans = window.document.querySelectorAll('span');
@@ -553,16 +543,15 @@ describe('Painter', () => {
 	describe('automatic layout', () => {
 		let window, painter;
 		beforeEach(() => {
-			const page = browser.newPage();
-			page.content = `
+			window = new Window();
+			window.document.write(`
 				<header></header>
 				<article>
 					<img />
 					<img />
 					<img />
 				</article>
-			`;
-			window = page.mainFrame.window;
+			`);
 			painter = new Painter({ window });
 		});
 
