@@ -2,14 +2,17 @@ import assert from 'node:assert/strict';
 import Painter from '../painter.js';
 import pick from 'lodash.pick';
 import Stylesheet from '../stylesheet.js';
-import { JSDOM } from 'jsdom';
+import { Browser } from 'happy-dom';
 
 describe('Painter', () => {
+	const browser = new Browser();
+
 	describe('Web APIs', () => {
-		let dom, window, element;
+		let window, element;
 		beforeEach('load DOM', () => {
-			dom = new JSDOM('<div>HTMLElement</div>');
-			window = dom.window;
+			const page = browser.newPage();
+			page.content = '<div>HTMLElement</div>';
+			window = page.mainFrame.window;
 			element = window.document.querySelector('div');
 		});
 
@@ -44,7 +47,7 @@ describe('Painter', () => {
 
 		describe('Element', () => {
 			beforeEach('is instance of Element', () => {
-				assert(element instanceof dom.window.Element);
+				assert(element instanceof window.Element);
 			});
 
 			it('.scrollWidth', () => {
@@ -153,7 +156,7 @@ describe('Painter', () => {
 
 		describe('HTMLElement', () => {
 			beforeEach('is instance of HTMLElement', () => {
-				assert(element instanceof dom.window.HTMLElement);
+				assert(element instanceof window.HTMLElement);
 			});
 
 			it('.offsetWidth', () => {
@@ -175,7 +178,7 @@ describe('Painter', () => {
 
 		describe('Window', () => {
 			beforeEach('is instance of Window', () => {
-				assert(window instanceof dom.window.Window);
+				assert(window instanceof window.Window);
 			});
 
 			it('.innerWidth', () => {
@@ -277,17 +280,18 @@ describe('Painter', () => {
 	});
 
 	describe('scrolling', () => {
-		let dom, window, ancestorElement, parentElement, childElements;
+		let window, ancestorElement, parentElement, childElements;
 		beforeEach('load DOM', () => {
-			dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<article>
 					<div>
 						<img>
 						<img>
 					</div>
 				</article>
-			`);
-			window = dom.window;
+			`;
+			window = page.mainFrame.window;
 			ancestorElement = window.document.querySelector('article');
 			parentElement = ancestorElement.firstElementChild;
 			childElements = parentElement.children;
@@ -306,7 +310,7 @@ describe('Painter', () => {
 		});
 
 		it('scrolling window paints descendants', () => {
-			dom.window.scrollTo(0, 50);
+			window.scrollTo(0, 50);
 
 			assert.deepEqual(
 				pick(ancestorElement.getBoundingClientRect(), 'x', 'y'),
@@ -351,10 +355,12 @@ describe('Painter', () => {
 
 	describe('options.stylesheet', () => {
 		before('defaults bounding box values to 0', async () => {
-			const dom = new JSDOM('<div>HTMLElement</div>');
-			new Painter().init(dom.window);
+			const page = browser.newPage();
+			page.content = '<div>HTMLElement</div>';
+			const window = page.mainFrame.window;
+			new Painter().init(window);
 
-			const element = dom.window.document.querySelector('div');
+			const element = window.document.querySelector('div');
 			assert.deepEqual(element.getBoundingClientRect(), {
 				width: 0,
 				height: 0,
@@ -368,16 +374,18 @@ describe('Painter', () => {
 		});
 
 		it('styles multiple elements', async () => {
-			const dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<div>HTMLElement</div>
 				<div>HTMLElement</div>
-			`);
+			`;
+			const window = page.mainFrame.window;
 			const stylesheet = new Stylesheet({
 				'*': { x: 50, y: 20, width: 150, height: 250 },
 			});
-			new Painter({ stylesheet }).init(dom.window);
+			new Painter({ stylesheet }).init(window);
 
-			const matchingElements = dom.window.document.querySelectorAll('*');
+			const matchingElements = window.document.querySelectorAll('*');
 			for (const element of matchingElements) {
 				assert.deepEqual(element.getBoundingClientRect(), {
 					width: 150,
@@ -393,18 +401,20 @@ describe('Painter', () => {
 		});
 
 		it('compounds multiple matching styles', async () => {
-			const dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<h1>A heading</h1>
 				<p>A paragraph…</p>
-			`);
+			`;
+			const window = page.mainFrame.window;
 			const stylesheet = new Stylesheet({
 				'*': { width: 375 },
 				'h1': { height: 36 },
 				'p': { height: 160, y: 36 },
 			});
-			new Painter({ stylesheet }).init(dom.window);
+			new Painter({ stylesheet }).init(window);
 
-			const [ h1, p ] = dom.window.document.body.children;
+			const [ h1, p ] = window.document.body.children;
 			assert.deepEqual(h1.getBoundingClientRect(), {
 				width: 375,
 				height: 36,
@@ -428,33 +438,37 @@ describe('Painter', () => {
 		});
 
 		it('uses selector specificity to resolve conflicting styles', async () => {
-			const dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<h1 id="the-heading" class="heading">
 					A heading
 				</h1>
-			`);
+			`;
+			const window = page.mainFrame.window;
 			const stylesheet = new Stylesheet({
 				'#the-heading': { height: 30 },
 				'h1, h2': { height: 10 },
 				'.heading': { height: 20 },
 				'*': { height: 0 },
 			});
-			new Painter({ stylesheet }).init(dom.window);
+			new Painter({ stylesheet }).init(window);
 
-			const h1 = dom.window.document.body.querySelector('h1');
+			const h1 = window.document.body.querySelector('h1');
 			assert.deepEqual(h1.offsetHeight, 30);
 		});
 
 		it('element styles supersede stylesheet styles', async () => {
-			const dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<div id="element">HTMLElement</div>
-			`);
+			`;
+			const window = page.mainFrame.window;
 			const stylesheet = new Stylesheet({
 				'#element': { width: 100, height: 100 },
 			});
-			const painter = new Painter({ window: dom.window, stylesheet });
+			const painter = new Painter({ window, stylesheet });
 
-			const element = dom.window.document.getElementById('element');
+			const element = window.document.getElementById('element');
 			painter.paint(element, { width: 200 });
 			assert.deepEqual(element.offsetWidth, 200);
 			assert.deepEqual(element.offsetHeight, 100);
@@ -464,14 +478,16 @@ describe('Painter', () => {
 	describe('.paint', () => {
 		let painter, divs, spans, elements;
 		beforeEach(() => {
-			const dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<div>HTMLElement</div>
 				<span>HTMLSpanElement</span>
-			`);
-			painter = new Painter(dom);
-			divs = dom.window.document.querySelectorAll('div');
-			spans = dom.window.document.querySelectorAll('span');
-			elements = dom.window.document.querySelectorAll('*');
+			`;
+			const window = page.mainFrame.window;
+			painter = new Painter({ window });
+			divs = window.document.querySelectorAll('div');
+			spans = window.document.querySelectorAll('span');
+			elements = window.document.querySelectorAll('*');
 		});
 
 		it('paints element', () => {
@@ -535,17 +551,19 @@ describe('Painter', () => {
 	});
 
 	describe('automatic layout', () => {
-		let dom, painter;
+		let window, painter;
 		beforeEach(() => {
-			dom = new JSDOM(`
+			const page = browser.newPage();
+			page.content = `
 				<header></header>
 				<article>
 					<img />
 					<img />
 					<img />
 				</article>
-			`);
-			painter = new Painter(dom);
+			`;
+			window = page.mainFrame.window;
+			painter = new Painter({ window });
 		});
 
 		[
@@ -553,7 +571,7 @@ describe('Painter', () => {
 			[ 'height', 'y', 'offsetHeight', 'offsetTop' ],
 		].forEach(([ side, axis, sideProperty, axisProperty ]) => {
 			it(`works with ${side} / ${axis}`, () => {
-				const article = dom.window.document.querySelector('article');
+				const article = window.document.querySelector('article');
 				const [ img1, img2, img3 ] = article.children;
 
 				painter.paint(article, { [side]: 'auto' });
@@ -573,7 +591,7 @@ describe('Painter', () => {
 			[ 'scrollHeight', 'height', 'y', 'offsetHeight' ],
 		].forEach(([ scrollSide, side, axis, sideProperty, scrollSideProperty = scrollSide ]) => {
 			it(`works with ${scrollSide} / ${side}`, () => {
-				const article = dom.window.document.querySelector('article');
+				const article = window.document.querySelector('article');
 				const [ img1, img2, img3 ] = article.children;
 
 				painter.paint(article, { [side]: 400, [scrollSide]: 'auto' });
@@ -587,7 +605,7 @@ describe('Painter', () => {
 		});
 
 		it('works with dynamic content', () => {
-			const article = dom.window.document.querySelector('article');
+			const article = window.document.querySelector('article');
 			const imgs = article.getElementsByTagName('img');
 
 			painter.paint(article, { height: 'auto' });
@@ -596,7 +614,7 @@ describe('Painter', () => {
 			assert.equal(article.offsetHeight, 300);
 			assert.equal(imgs[2].offsetTop, 200);
 
-			article.appendChild(dom.window.document.createElement('img'));
+			article.appendChild(window.document.createElement('img'));
 
 			assert.equal(article.offsetHeight, 400);
 			assert.equal(imgs[3].offsetTop, 300);
