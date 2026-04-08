@@ -6,7 +6,7 @@
   "main": "wichita.js",
   "exports": {
     ".": "./wichita.js",
-    "./script": "./script.js"
+    "./*": "./*"
   },
   "author": "",
   "license": "MIT",

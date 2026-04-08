@@ -47,6 +47,11 @@ A module for executing JavaScript code. A wrapper around the [`vm.SourceTextModu
 ```js
 import { Script } from '@zombieland/wichita';
 ```
+Or if you're using the `Script` module without JSDOM:
+
+```js
+import Script from '@zombieland/wichita/script.js';
+```
 
 #### `new Script(filePath)`
 
