@@ -48,7 +48,7 @@ describe('ReverseProxy', () => {
 		assert.equal(response.status, 200);
 	});
 
-	it('proxies request with headers', async () => {
+	it('proxies request with additional headers', async () => {
 		nock(upstreamOrigin)
 			.get('/resource')
 			.reply(function () {
@@ -66,6 +66,44 @@ describe('ReverseProxy', () => {
 		new ReverseProxy(proxyOrigin, upstreamOrigin, new Headers({
 			via: '1.1 ZL'
 		}));
+
+		const response = await fetch(proxyOrigin + '/resource', {
+			headers: { 'req-header': 'value' },
+		});
+		assert.equal(response.status, 200);
+	});
+
+	it('proxies modified request', async () => {
+		nock(upstreamOrigin)
+			.get('/resource')
+			.reply(function () {
+				const { headers } = this.req;
+				assert.equal(headers.host, 'tallahassee.zl');
+				assert.equal(headers.via, '1.1 ZL');
+				assert.equal(headers['req-header'], 'value');
+				assert.equal(headers.forwarded, 'for=192.168.0.1;proto=https;host=tallahassee.zl');
+				assert.equal(headers['x-forwarded-proto'], undefined);
+				assert.equal(headers['x-forwarded-host'], undefined);
+				return [ 200 ];
+			});
+
+		class CustomReverseProxy extends ReverseProxy {
+			modifyUpstreamRequest (req) {
+				assert(!req.headers.get('forwarded'));
+
+				req = super.modifyUpstreamRequest(req);
+				assert(req.headers.get('forwarded'));
+
+				req.headers.set('via', '1.1 ZL');
+				req.headers.set('forwarded', 'for=192.168.0.1;' + req.headers.get('forwarded'));
+				req.headers.delete('x-forwarded-proto');
+				req.headers.delete('x-forwarded-host');
+				return req;
+			}
+		}
+
+		// eslint-disable-next-line no-new
+		new CustomReverseProxy(proxyOrigin, upstreamOrigin);
 
 		const response = await fetch(proxyOrigin + '/resource', {
 			headers: { 'req-header': 'value' },

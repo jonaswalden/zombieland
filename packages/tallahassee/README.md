@@ -16,7 +16,7 @@ A browser module around JSDOM for testing a web application as opposed to a docu
     - [browser.captureNavigation(dom[, follow])](#browsercapturenavigationdom-follow)
   - [ReverseProxy](#reverseproxy)
     - [new ReverseProxy(proxyOrigin, upstreamOrigin[, headers])](#new-reverseproxyproxyorigin-upstreamorigin-headers)
-    - [reverseProxy.buildForwardingHeaders()](#reverseproxybuildforwardingheaders)
+    - [reverseProxy.modifyUpstreamRequest(req)](#reverseproxymodifyupstreamrequestreq)
     - [reverseProxy.clear()](#reverseproxyclear)
 
 ## Basic usage
@@ -197,7 +197,7 @@ Creates HTTP interceptor for a _public_ proxy origin and proxies request to a _l
 
 - `proxyOrigin` `<string>` Public URL origin
 - `upstreamOrigin` `<string>` Server URL origin
-- `headers` `<Object>` | `<Headers>` Headers to pass along to server. **Default** result of `reverseProxy.buildForwardingHeaders()`
+- `headers` `<Object>` | `<Headers>` Headers to pass along to server. **Default** Standard forwarding headers (`Forwarded`, `X-Forwarded-Proto`, `X-Forwarded-Host`) derived from `proxyOrigin`
 - Returns: `<ReverseProxy>`
 
 ```js
@@ -211,14 +211,28 @@ const dom = await browser.navigateTo('/safe-house');
 assert.equal(dom.window.location, 'https://tallahassee.zl/safe-house');
 ```
 
-#### `reverseProxy.buildForwardingHeaders()`
+#### `reverseProxy.modifyUpstreamRequest(req)`
 
-Builds a set of forwarding headers from `proxyOrigin`
+Modifies the upstream request before it is sent to the upstream origin. This method can be overridden to customize request headers or other properties.
 
-- Returns: `<Headers>`
-	- `Forwarded`: `proto=proxyOrigin.proto;host=proxyOrigin.host`
-	- `X-Forwarded-Proto`: proto from `proxyOrigin`
-	- `X-Forwarded-Host`: `host` from `proxyOrigin`
+The default implementation applies the `headers` supplied to the constructor.
+
+- `req` `<Request>` The request object to be sent to the upstream origin
+- Returns: `<Request>` The modified request object
+
+```js
+class CustomReverseProxy extends ReverseProxy {
+	modifyUpstreamRequest(req) {
+		req = super.modifyUpstreamRequest(req);
+
+		const forwarded = req.headers.get('forwarded');
+		req.headers.set('forwarded', `for=192.168.0.1;${forwarded}`);
+		req.headers.set('Via', '1.1 MyProxy');
+		
+		return req;
+	}
+}
+```
 
 #### `reverseProxy.clear()`
 
