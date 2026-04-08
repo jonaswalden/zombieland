@@ -4,6 +4,10 @@
   "version": "0.0.1",
   "description": "",
   "main": "wichita.js",
+  "exports": {
+    ".": "./wichita.js",
+    "./script": "./script.js"
+  },
   "author": "",
   "license": "MIT",
   "scripts": {
