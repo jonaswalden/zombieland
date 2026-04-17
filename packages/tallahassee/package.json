@@ -9,10 +9,10 @@
   },
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "nock": "^14.0.10"
-  },
   "peerDependencies": {
     "jsdom": "^27.2.0"
+  },
+  "devDependencies": {
+    "nock": "^14.0.12"
   }
 }
