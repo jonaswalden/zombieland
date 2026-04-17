@@ -13,6 +13,6 @@
     "specificity": "^1.0.0"
   },
   "peerDependencies": {
-    "jsdom": "^27.2.0"
+    "jsdom": "^27.4.0"
   }
 }

@@ -14,7 +14,7 @@
     "test": "mocha"
   },
   "peerDependencies": {
-    "jsdom": "^27.2.0"
+    "jsdom": "^27.4.0"
   },
   "peerDependenciesMeta": {
     "jsdom": {

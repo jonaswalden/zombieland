@@ -10,7 +10,7 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "jsdom": "^27.2.0"
+    "jsdom": "^27.4.0"
   },
   "devDependencies": {
     "nock": "^14.0.12"
