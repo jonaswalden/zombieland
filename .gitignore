@@ -33,5 +33,3 @@ config/_revision
 
 /tmp
 .vscode
-
-zombieland.cjs

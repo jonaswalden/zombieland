@@ -101,9 +101,4 @@ export default [
 			}
 		},
 	},
-	{
-		ignores: [
-			'zombieland.cjs',
-		],
-	},
 ];
