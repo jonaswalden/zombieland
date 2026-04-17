@@ -153,7 +153,7 @@ it('evaluates code multiple times', async () => {
 
 An extension of the jsdom [`ResourceLoader`](https://github.com/jsdom/jsdom/blob/main/README.md#advanced-configuration) with additional support for resolving DOM nodes into wichita scripts and script execution.
 
-> May be subject to change in the future. Keeping documentation breif. Take a look in the [Source code resource example](https://github.com/BonnierNews/zombieland/blob/main/examples/source-code-resource) for more details.
+> May be subject to change in the future. Keeping documentation breif. Take a look in the [Source code resource example](https://github.com/jonaswalden/zombieland/blob/main/examples/source-code-resource) for more details.
 
 ```js
 import { ResourceLoader } from '@zombieland/wichita';

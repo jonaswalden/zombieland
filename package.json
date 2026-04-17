@@ -18,18 +18,13 @@
 		"node": "^20.19.0 || ^22.12.0 || >=24.0.0"
 	},
 	"keywords": [
-		"headless",
-		"browser",
-		"fake",
-		"mock",
-		"IntersectionObserver",
-		"MutationObserver",
-		"iframe"
+		"jsdom",
+		"browser"
 	],
 	"author": "Jonas Waldén",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/BonnierNews/zombieland.git"
+		"url": "git://github.com/jonaswalden/zombieland.git"
 	},
 	"dependencies": {
 		"@zombieland/little-rock": "file:packages/little-rock",
@@ -48,9 +43,9 @@
 		"mocha-cakes-2": "^3.3.0"
 	},
 	"bugs": {
-		"url": "https://github.com/BonnierNews/zombieland/issues"
+		"url": "https://github.com/jonaswalden/zombieland/issues"
 	},
-	"homepage": "https://github.com/BonnierNews/zombieland#readme",
+	"homepage": "https://github.com/jonaswalden/zombieland#readme",
 	"workspaces": [
 		"packages/little-rock",
 		"packages/tallahassee",
