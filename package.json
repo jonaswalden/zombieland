@@ -5,14 +5,9 @@
 	"description": "",
 	"main": "zombieland.js",
 	"license": "MIT",
-	"exports": {
-		"import": "./zombieland.js",
-		"require": "./zombieland.cjs"
-	},
 	"scripts": {
 		"test": "npm test --workspaces --if-present && mocha 'examples/**/test.js'",
-		"lint": "eslint .",
-		"prepack": "esbuild zombieland.js --bundle --platform=node --packages=external --format=cjs --outdir=. --out-extension:.js=.cjs --define:import.meta.filename=__filename"
+		"lint": "eslint ."
 	},
 	"engines": {
 		"node": "^20.19.0 || ^22.12.0 || >=24.0.0"
@@ -34,7 +29,6 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"chai": "^6.2.2",
-		"esbuild": "^0.27.0",
 		"eslint": "^10.2.0",
 		"globals": "^17.5.0",
 		"jsdom": "^27.2.0",
