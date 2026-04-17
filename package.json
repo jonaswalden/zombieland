@@ -27,11 +27,11 @@
 		"@zombieland/wichita": "file:packages/wichita"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.39.1",
-		"chai": "^6.2.1",
-		"eslint": "^9.39.1",
-		"globals": "^16.5.0",
-		"jsdom": "^27.2.0",
+		"@eslint/js": "^10.0.1",
+		"chai": "^6.2.2",
+		"eslint": "^10.2.0",
+		"globals": "^17.5.0",
+		"jsdom": "27",
 		"lodash.pick": "^4.4.0",
 		"mocha": "^11.7.5",
 		"mocha-cakes-2": "^3.3.0"
@@ -46,6 +46,6 @@
 		"packages/wichita"
 	],
 	"peerDependencies": {
-		"jsdom": "^27.2.0"
+		"jsdom": "^27.4.0"
 	}
 }
