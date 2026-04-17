@@ -32,11 +32,11 @@
 		"@zombieland/wichita": "file:packages/wichita"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.39.1",
+		"@eslint/js": "^10.0.1",
 		"chai": "^6.2.1",
 		"esbuild": "^0.27.0",
-		"eslint": "^9.39.1",
-		"globals": "^16.5.0",
+		"eslint": "^10.2.0",
+		"globals": "^17.5.0",
 		"jsdom": "^27.2.0",
 		"lodash.pick": "^4.4.0",
 		"mocha": "^11.7.5",
