@@ -1,7 +1,7 @@
 {
   "name": "@zombieland/wichita",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "wichita.js",
   "exports": {
@@ -9,7 +9,7 @@
     "./*": "./*"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "scripts": {
     "test": "mocha"
   },

@@ -1,14 +1,14 @@
 {
   "name": "@zombieland/little-rock",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "little-rock.js",
   "scripts": {
     "test": "mocha"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "specificity": "^1.0.0"
   },

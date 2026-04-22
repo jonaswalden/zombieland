@@ -1,14 +1,14 @@
 {
   "name": "@zombieland/tallahassee",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "tallahassee.js",
   "scripts": {
     "test": "mocha"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "peerDependencies": {
     "jsdom": "^27.4.0"
   },
