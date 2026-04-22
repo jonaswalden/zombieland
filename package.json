@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"description": "",
 	"main": "zombieland.js",
-	"license": "MIT",
+	"license": "ISC",
 	"scripts": {
 		"test": "npm test --workspaces --if-present && mocha 'examples/**/test.js'",
 		"lint": "eslint ."
@@ -22,9 +22,9 @@
 		"url": "git://github.com/jonaswalden/zombieland.git"
 	},
 	"dependencies": {
-		"@zombieland/little-rock": "^0.1.0",
-		"@zombieland/tallahassee": "^0.1.0",
-		"@zombieland/wichita": "^0.1.0"
+		"@zombieland/little-rock": "^0.1.1",
+		"@zombieland/tallahassee": "^0.1.1",
+		"@zombieland/wichita": "^0.1.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

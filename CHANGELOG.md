@@ -10,4 +10,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Initial release.
-- Umbrella package re-exporting `@zombieland/tallahassee`, `@zombieland/little-rock`, and `@zombieland/wichita`.
