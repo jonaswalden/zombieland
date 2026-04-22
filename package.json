@@ -1,7 +1,7 @@
 {
 	"name": "zombieland",
 	"type": "module",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "",
 	"main": "zombieland.js",
 	"license": "MIT",
@@ -22,9 +22,9 @@
 		"url": "git://github.com/jonaswalden/zombieland.git"
 	},
 	"dependencies": {
-		"@zombieland/little-rock": "file:packages/little-rock",
-		"@zombieland/tallahassee": "file:packages/tallahassee",
-		"@zombieland/wichita": "file:packages/wichita"
+		"@zombieland/little-rock": "^0.1.0",
+		"@zombieland/tallahassee": "^0.1.0",
+		"@zombieland/wichita": "^0.1.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

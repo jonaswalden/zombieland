@@ -1,7 +1,7 @@
 {
   "name": "@zombieland/little-rock",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "little-rock.js",
   "scripts": {
