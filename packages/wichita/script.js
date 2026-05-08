@@ -30,37 +30,45 @@ export default class Script {
 
 	async evaluate (context = {}) {
 		let exports = undefined;
+		const vmContext = vm.isContext(context) ? context : vm.createContext(context);
+		const moduleCache = new Map();
+
+		const link = async (specifier, referencingModule) => {
+			let identifier, code;
+			if (referencingModule.identifier === 'wichita:entry') {
+				identifier = this.identifier;
+				code = String(await this.code);
+			}
+			else {
+				[ identifier, code ] = await Script.#resolve(specifier, referencingModule);
+			}
+
+			let promise = moduleCache.get(identifier);
+			if (!promise) {
+				promise = (async () => {
+					const mod = new vm.SourceTextModule(code, {
+						identifier,
+						context: vmContext,
+						importModuleDynamically: link,
+					});
+					await mod.link(link);
+					return mod;
+				})();
+				moduleCache.set(identifier, promise);
+			}
+			return promise;
+		};
+
 		const module = new vm.SourceTextModule(entryCode, {
 			identifier: 'wichita:entry',
-			context: vm.isContext(context) ?
-				context :
-				vm.createContext(context),
+			context: vmContext,
 			initializeImportMeta (meta) {
 				meta.export = values => exports = values;
 			}
 		});
-		await module.link(Script.#link.bind(this));
+		await module.link(link);
 		await module.evaluate();
 		return exports;
-	}
-
-	static async #link (specifier, referencingModule) {
-		let identifier, code;
-		if (referencingModule.identifier === 'wichita:entry') {
-			identifier = this.identifier;
-			code = String(await this.code);
-		}
-		else {
-			[ identifier, code ] = await Script.#resolve(specifier, referencingModule);
-		}
-
-		const module = new vm.SourceTextModule(code, {
-			identifier,
-			context: referencingModule.context,
-			importModuleDynamically: Script.#link,
-		});
-		await module.link(Script.#link);
-		return module;
 	}
 
 	static async #resolve (specifier, referencingModule) {

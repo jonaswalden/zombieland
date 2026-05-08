@@ -51,6 +51,15 @@ describe('Script', () => {
 			assert.equal(exports.named, 'with exports!');
 		});
 
+		it('shares module state in diamond dependency graphs', async () => {
+			const ctx = {};
+			const script = new Script(import.meta.dirname + '/files/diamond-entry.mjs');
+
+			await script.evaluate(ctx);
+
+			assert.deepEqual(Array.from(ctx.results), [ 1, 2, 3 ]);
+		});
+
 		it('evaluates script multiple times', async function () {
 			const dom1 = new JSDOM('<title>once</title>');
 			const dom2 = new JSDOM('<title>twice</title>');
