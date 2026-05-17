@@ -1,10 +1,14 @@
-import FSCache from './fs-cache.js';
+import Cache from './cache.js';
+import fs from 'node:fs/promises';
 import isPath from './is-path.js';
 import path from 'node:path';
 import url from 'node:url';
 import vm from 'node:vm';
 
-const fsCache = new FSCache();
+const fsCache = new Cache(key => {
+	return fs.readFile(key, { encoding: 'utf8' });
+});
+
 const entryCode = `
 	import * as exports from "wichita:source";
 	import.meta.export(exports);
@@ -21,7 +25,7 @@ export default class Script {
 		}
 		else if (isPath(args[0])) {
 			this.identifier = args[0];
-			this.code = fsCache.get(this.identifier);
+			this.code = fsCache.lookup(this.identifier);
 		}
 		else {
 			this.code = args[0];
@@ -69,8 +73,8 @@ export default class Script {
 				path.resolve(path.dirname(referencingModule.identifier), specifier) :
 				url.fileURLToPath(import.meta.resolve(specifier));
 
-			const file = await fsCache.get(identifier);
-			return [ identifier, file ];
+			const code = await fsCache.lookup(identifier);
+			return [ identifier, code ];
 		}
 		catch (error) {
 			if (!referencingModule) throw error;
