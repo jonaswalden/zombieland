@@ -10,24 +10,24 @@ describe('Script', () => {
 
 			await script.evaluate(dom.window);
 
-			assert.equal(dom.window.document.title, 'initial value, edit from source entry, edit from source component');
+			assert.equal(dom.window.document.title, 'initial value, update from source entry, update from source component');
 		});
 
 		it('evaluates script from code', async () => {
 			const dom = new JSDOM('<title>initial value</title>');
 			const script = new Script(`
-				document.title += ', edit from script';
+				document.title += ', update from script';
 			`);
 
 			await script.evaluate(dom.window);
 
-			assert.equal(dom.window.document.title, 'initial value, edit from script');
+			assert.equal(dom.window.document.title, 'initial value, update from script');
 		});
 
 		it('evaluates script with imports', async function () {
 			const dom = new JSDOM('<title>initial value</title>');
 			const script = new Script(getTestPath(this), `
-				import component from './files/source-component.mjs';
+				import component from './files/source-component/source-component.mjs';
 				import packageComponent from 'package-component';
 				component();
 				packageComponent();
@@ -35,7 +35,7 @@ describe('Script', () => {
 
 			await script.evaluate(dom.window);
 
-			assert.equal(dom.window.document.title, 'initial value, edit from source component, edit from package component');
+			assert.equal(dom.window.document.title, 'initial value, update from source component, update from package component');
 		});
 
 		it('evaluates script with exports', async function () {
