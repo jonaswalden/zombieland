@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import Script from '../script.js';
 import { JSDOM } from 'jsdom';
 
@@ -6,7 +7,7 @@ describe('Script', () => {
 	describe('.evaluate()', () => {
 		it('evaluates script from file path', async () => {
 			const dom = new JSDOM('<title>initial value</title>');
-			const script = new Script(import.meta.dirname + '/files/source-entry.mjs');
+			const script = new Script(path.join(import.meta.dirname, 'files', 'source-entry.mjs'));
 
 			await script.evaluate(dom.window);
 
