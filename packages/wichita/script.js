@@ -5,80 +5,57 @@ import path from 'node:path';
 import url from 'node:url';
 import vm from 'node:vm';
 
-const fsCache = new Cache(key => {
-	return fs.readFile(key, { encoding: 'utf8' });
+let i = 0;
+
+const fsCache = new Cache(filePath => {
+	return fs.readFile(filePath, { encoding: 'utf8' });
 });
 
-const entryCode = `
-	import * as exports from "wichita:source";
-	import.meta.export(exports);
-`;
-
 export default class Script {
-	identifier = 'wichita:code';
-	code = '';
+	identifier = `wichita:code(${i++})`;
 
 	constructor (...args) {
 		if (args.length === 2) {
 			this.identifier = args[0];
-			this.code = args[1];
+			fsCache.set(this.identifier, args[1]);
 		}
 		else if (isPath(args[0])) {
 			this.identifier = args[0];
-			this.code = fsCache.lookup(this.identifier);
 		}
 		else {
-			this.code = args[0];
+			fsCache.set(this.identifier, args[0]);
 		}
 	}
 
 	async evaluate (context = {}) {
-		let exports = undefined;
-		const module = new vm.SourceTextModule(entryCode, {
-			identifier: 'wichita:entry',
-			context: vm.isContext(context) ?
-				context :
-				vm.createContext(context),
-			initializeImportMeta (meta) {
-				meta.export = values => exports = values;
-			}
-		});
-		await module.link(Script.#link.bind(this));
-		await module.evaluate();
-		return exports;
-	}
+		context = vm.isContext(context) ?
+			context :
+			vm.createContext(context);
 
-	static async #link (specifier, referencingModule) {
-		let identifier, code;
-		if (referencingModule.identifier === 'wichita:entry') {
-			identifier = this.identifier;
-			code = String(await this.code);
-		}
-		else {
-			[ identifier, code ] = await Script.#resolve(specifier, referencingModule);
-		}
+		const moduleCache = new Cache(resolveModule);
+		const link = Script.#link.bind(null, moduleCache);
 
-		const module = new vm.SourceTextModule(code, {
-			identifier,
-			context: referencingModule.context,
-			importModuleDynamically: Script.#link,
-		});
-		await module.link(Script.#link);
-		return module;
-	}
+		const entryModule = await moduleCache.lookup(this.identifier);
+		await entryModule.evaluate();
+		return entryModule.namespace;
 
-	static async #resolve (specifier, referencingModule) {
-		try {
-			const identifier = referencingModule ?
-				path.resolve(path.dirname(referencingModule.identifier), specifier) :
-				url.fileURLToPath(import.meta.resolve(specifier));
-
+		async function resolveModule (identifier) {
 			const code = await fsCache.lookup(identifier);
-			return [ identifier, code ];
+			const module = new vm.SourceTextModule(code, {
+				identifier,
+				context,
+				importModuleDynamically: link,
+			});
+			await module.link(link);
+			return module;
 		}
-		catch (error) {
-			if (!referencingModule) throw error;
-			return Script.#resolve(specifier);
-		}
+	}
+
+	static async #link (moduleCache, specifier, referencingModule) {
+		const identifier = await (/^\.*\//.test(specifier)) ?
+			path.resolve(path.dirname(referencingModule.identifier), specifier) :
+			url.fileURLToPath(import.meta.resolve(specifier));
+
+		return moduleCache.lookup(identifier);
 	}
 }
