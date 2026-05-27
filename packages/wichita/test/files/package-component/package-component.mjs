@@ -1,3 +1,3 @@
 export default function component () {
-	document.title += ', edit from package component';
+	document.title += ', update from package component';
 }

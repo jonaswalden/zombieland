@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Avoid creating duplicates of modules every subsequent import
 - Detect Windows file paths
 
 ## [0.1.1] - 2026-04-22

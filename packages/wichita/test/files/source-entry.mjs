@@ -1,4 +1,7 @@
-import component from './source-component.mjs';
+import update, { memory as _helperMemory } from './helpers/update.mjs';
+import component from './source-component/source-component.mjs';
 
-document.title += ', edit from source entry';
+update('source entry');
 component();
+
+export { _helperMemory };

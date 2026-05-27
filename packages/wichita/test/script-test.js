@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import assert from 'node:assert';
 import path from 'node:path';
 import Script from '../script.js';
 import { JSDOM } from 'jsdom';
@@ -9,26 +9,27 @@ describe('Script', () => {
 			const dom = new JSDOM('<title>initial value</title>');
 			const script = new Script(path.join(import.meta.dirname, 'files', 'source-entry.mjs'));
 
-			await script.evaluate(dom.window);
+			const { _helperMemory } = await script.evaluate(dom.window);
 
-			assert.equal(dom.window.document.title, 'initial value, edit from source entry, edit from source component');
+			assert.strictEqual(dom.window.document.title, 'initial value, update from source entry, update from source component');
+			assert.deepEqual(_helperMemory, [ 'update from source entry', 'update from source component' ]);
 		});
 
 		it('evaluates script from code', async () => {
 			const dom = new JSDOM('<title>initial value</title>');
 			const script = new Script(`
-				document.title += ', edit from script';
+				document.title += ', update from script';
 			`);
 
 			await script.evaluate(dom.window);
 
-			assert.equal(dom.window.document.title, 'initial value, edit from script');
+			assert.strictEqual(dom.window.document.title, 'initial value, update from script');
 		});
 
 		it('evaluates script with imports', async function () {
 			const dom = new JSDOM('<title>initial value</title>');
 			const script = new Script(getTestPath(this), `
-				import component from './files/source-component.mjs';
+				import component from './files/source-component/source-component.mjs';
 				import packageComponent from 'package-component';
 				component();
 				packageComponent();
@@ -36,7 +37,7 @@ describe('Script', () => {
 
 			await script.evaluate(dom.window);
 
-			assert.equal(dom.window.document.title, 'initial value, edit from source component, edit from package component');
+			assert.strictEqual(dom.window.document.title, 'initial value, update from source component, update from package component');
 		});
 
 		it('evaluates script with exports', async function () {
@@ -48,8 +49,8 @@ describe('Script', () => {
 
 			const exports = await script.evaluate(dom.window);
 
-			assert.equal(exports.default, 'with exports?');
-			assert.equal(exports.named, 'with exports!');
+			assert.strictEqual(exports.default, 'with exports?');
+			assert.strictEqual(exports.named, 'with exports!');
 		});
 
 		it('evaluates script multiple times', async function () {
@@ -66,9 +67,9 @@ describe('Script', () => {
 				script.evaluate(dom2.window),
 			]);
 
-			assert.equal(exports[0].default, 'once!');
-			assert.equal(exports[1].default, 'twice!');
-			assert.equal(exports[1].times, 1);
+			assert.strictEqual(exports[0].default, 'once!');
+			assert.strictEqual(exports[1].default, 'twice!');
+			assert.strictEqual(exports[1].times, 1);
 		});
 	});
 });
