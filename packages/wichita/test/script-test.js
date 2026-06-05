@@ -72,6 +72,43 @@ describe('Script', () => {
 			assert.strictEqual(exports[1].times, 1);
 		});
 	});
+
+	describe('.load()', () => {
+		it('enables custom loading', async function () {
+			class ScriptWithCustomLoader extends Script {
+				load (identifier) {
+					if (!identifier.endsWith('custom-component.mjs'))
+						return super.load(identifier);
+
+					return Promise.resolve(`
+						import update from '../helpers/update.mjs';
+
+						export default function component () {
+							update('custom component');
+						}
+					`);
+				}
+			}
+
+			const dom = new JSDOM('<title>initial value</title>');
+			const script = new ScriptWithCustomLoader(getTestPath(this), `
+				import update, { memory as _helperMemory } from './files/helpers/update.mjs';
+				import component from './files/source-component/source-component.mjs';
+				import customComponent from './files/custom-component/custom-component.mjs';
+
+				update('entry');
+				component();
+				customComponent();
+
+				export { _helperMemory };
+			`);
+
+			const { _helperMemory } = await script.evaluate(dom.window);
+
+			assert.strictEqual(dom.window.document.title, 'initial value, update from entry, update from source component, update from custom component');
+			assert.deepEqual(_helperMemory, [ 'update from entry', 'update from source component', 'update from custom component' ]);
+		});
+	});
 });
 
 function getTestPath (context) {
