@@ -62,14 +62,12 @@ describe('Script', () => {
 				export const times = ++i;
 			`);
 
-			const exports = await Promise.all([
-				script.evaluate(dom1.window),
-				script.evaluate(dom2.window),
-			]);
+			const exports1 = await script.evaluate(dom1.window);
+			const exports2 = await script.evaluate(dom2.window);
 
-			assert.strictEqual(exports[0].default, 'once!');
-			assert.strictEqual(exports[1].default, 'twice!');
-			assert.strictEqual(exports[1].times, 1);
+			assert.strictEqual(exports1.default, 'once!');
+			assert.strictEqual(exports2.default, 'twice!');
+			assert.strictEqual(exports2.times, 1);
 		});
 	});
 

@@ -1,14 +1,14 @@
-import Cache from './cache.js';
 import fs from 'node:fs/promises';
-import isPath from './is-path.js';
 import path from 'node:path';
 import url from 'node:url';
 import vm from 'node:vm';
+import Cache from './cache.js';
+import isPath from './is-path.js';
 
-let i = 0;
+let s = 0;
 
 export default class Script {
-	#identifier = `wichita:code(${i++})`;
+	#identifier = `wichita:code(${s++})`;
 	#fileCache;
 	#moduleCache;
 
@@ -26,18 +26,18 @@ export default class Script {
 	}
 
 	async evaluate (context = {}) {
-		context = vm.isContext(context) ? context : vm.createContext(context);
-		const link = this.#link.bind(this);
-		this.#moduleCache = new Cache(this.#load.bind(this, context, link));
+		this.context = vm.isContext(context) ? context : vm.createContext(context);
+		this.#moduleCache = new Cache(this.#link.bind(this));
 
-		const entryModule = await this.#moduleCache.lookup(this.#identifier);
-		await entryModule.evaluate();
-		return entryModule.namespace;
+		const module = await this.#moduleCache.lookup(this.#identifier);
+		module.instantiate();
+		await module.evaluate();
+		return module.namespace;
 	}
 
-	resolve (specifier, referencingModule) {
+	resolve (specifier, parentIdentifier) {
 		return (/^\.*\//.test(specifier)) ?
-			path.resolve(path.dirname(referencingModule.identifier), specifier) :
+			path.resolve(path.dirname(parentIdentifier), specifier) :
 			url.fileURLToPath(import.meta.resolve(specifier));
 	}
 
@@ -45,19 +45,18 @@ export default class Script {
 		return fs.readFile(identifier, { encoding: 'utf8' });
 	}
 
-	async #link (specifier, referencingModule) {
-		const identifier = await this.resolve(specifier, referencingModule);
-		return this.#moduleCache.lookup(identifier);
-	}
-
-	async #load (context, link, identifier) {
+	async #link (identifier) {
 		const code = await this.#fileCache.lookup(identifier);
 		const module = new vm.SourceTextModule(code, {
 			identifier,
-			context,
-			importModuleDynamically: link,
+			context: this.context,
 		});
-		await module.link(link);
+		const moduleRequests = await Promise.all(
+			module.moduleRequests
+				.map(r => this.resolve(r.specifier, identifier))
+				.map(i => this.#moduleCache.lookup(i))
+		);
+		module.linkRequests(moduleRequests);
 		return module;
 	}
 }
