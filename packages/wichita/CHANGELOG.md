@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Script requires Node version ^22.21.0 or >= 24.8.0 or 
+
+### Added
+
+- Script resolve method
+- Script load method
+
+### Fixed
+
+- Specify engines
+
 ## [0.1.2] - 2026-05-27
 
 ### Fixed
