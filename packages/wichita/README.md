@@ -53,11 +53,11 @@ Or if you're using the `Script` module without JSDOM:
 import Script from '@zombieland/wichita/script.js';
 ```
 
-#### `new Script(filePath)`
+#### `new Script(identifier)`
 
-Creates a new Script instance from a file path.
+Creates a new Script instance from an identifier - a file path.
 
-- `filePath` `<string>` Absolute path to a JavaScript file
+- `identifier` `<string>` Identifier of script file. Required to be an absolute file path. Also used for resolving relative imports.
 
 ```js
 const script = new Script(import.meta.dirname + '/my-script.js');
@@ -79,7 +79,7 @@ const script = new Script(`
 
 Creates a new Script instance with a custom identifier from source code.
 
-- `identifier` `<string>` Script identifier. Used for resolving imports and stack traces.
+- `identifier` `<string>` Identifier of script file. Required to be an absolute file path. Also used for resolving relative imports.
 - `code` `<string>` JavaScript code to execute
 
 ```js
