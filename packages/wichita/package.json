@@ -8,6 +8,9 @@
     ".": "./wichita.js",
     "./*": "./*"
   },
+  "engines": {
+		"node": "^22.21.0 || >=24.8.0"
+	},
   "author": "",
   "license": "ISC",
   "scripts": {

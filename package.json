@@ -10,7 +10,7 @@
 		"lint": "eslint ."
 	},
 	"engines": {
-		"node": "^22.20.0 || >=24.4.0"
+		"node": "^22.21.0 || >=24.8.0"
 	},
 	"keywords": [
 		"jsdom",

@@ -4,6 +4,9 @@
   "version": "0.1.1",
   "description": "",
   "main": "little-rock.js",
+  "engines": {
+		"node": "^22.20.0 || >=24.4.0"
+	},
   "scripts": {
     "test": "mocha"
   },
