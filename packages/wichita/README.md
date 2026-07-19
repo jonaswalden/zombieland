@@ -149,6 +149,58 @@ it('evaluates code multiple times', async () => {
 });
 ```
 
+#### `Script.resolve(specifier, parentIdentifier)`
+
+The function used to resolve imports. Override to customize the regular behavior. Can be useful for stubbing packages for example. 
+
+- `specifier` `<string>` Dependency specifier to be resolved
+- `parentIdentifier` `<string>` Identifier of the file doing the import
+- Returns: `<string>` Identifier of dependency
+
+```js
+class ScriptWithCustomResolver extends Script {
+	resolve (specifier, parentIdentifier) {
+		if (specifier === 'some-package') {
+			return path.resolve('./test/helpers/some-package-mock.js');
+		}
+
+		return super.resolve(specifier, parentIdentifier);
+	}
+}
+
+new ScriptWithCustomResolver(`
+	import package from 'some-package';
+
+	package();
+`)
+```
+
+#### `Script.load(identifier)`
+
+The function used to load imports in the script. Override to customize the regular behavior. Can be useful for modifying the source code before evaluating. 
+
+- `identifier` `<string>` Absolute path of the file to load
+- Returns: `<Promise>` Resolves with the code as a `string`
+
+```js
+class ScriptWithCustomLoader extends Script {
+	async load (identifier) {
+		const code = await super.load(identifier); 
+		return identifier.endsWith('.jsx') ?
+			transpileJSX(code) :
+			code;
+	}
+}
+
+new ScriptWithCustomLoader('custom-syntax.jsx', `
+	import react from 'react';
+	import Component from './component.jsx';
+
+  const element = <Component>Hello</Component>;
+  document.body.append(element);
+`)
+```
+
 ### `ResourceLoader`
 
 An extension of the jsdom [`ResourceLoader`](https://github.com/jsdom/jsdom/blob/main/README.md#advanced-configuration) with additional support for resolving DOM nodes into wichita scripts and script execution.
