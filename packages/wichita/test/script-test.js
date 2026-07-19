@@ -71,6 +71,31 @@ describe('Script', () => {
 		});
 	});
 
+	describe('.resolve()', () => {
+		it('enables custom resolving', async function () {
+			class ScriptWithCustomResolver extends Script {
+				resolve (specifier, parentIdentifier) {
+					if (specifier !== 'dependency')
+						return super.resolve(specifier, parentIdentifier);
+
+					return path.resolve('./test/files/mock-dependency.mjs');
+				}
+			}
+
+			const dom = new JSDOM('<title>initial value</title>');
+			const script = new ScriptWithCustomResolver(getTestPath(this), `
+				import dependency from 'dependency';
+				import update from './files/helpers/update.mjs';
+
+				update(dependency);
+			`);
+
+			await script.evaluate(dom.window);
+
+			assert.strictEqual(dom.window.document.title, 'initial value, update from mock dependency');
+		});
+	});
+
 	describe('.load()', () => {
 		it('enables custom loading', async function () {
 			class ScriptWithCustomLoader extends Script {
