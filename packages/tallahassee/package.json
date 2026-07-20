@@ -1,12 +1,12 @@
 {
   "name": "@zombieland/tallahassee",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "main": "tallahassee.js",
   "engines": {
-		"node": "^22.20.0 || >=24.4.0"
-	},
+    "node": "^22.20.0 || >=24.4.0"
+  },
   "scripts": {
     "test": "mocha"
   },
