@@ -17,6 +17,7 @@ export default class Cache extends Map {
 	set (...path) {
 		const value = path.pop();
 		const key = Cache.serializePath(path);
+
 		return super.set(key, value);
 	}
 
@@ -28,12 +29,12 @@ export default class Cache extends Map {
 	lookup (...path) {
 		const key = Cache.serializePath(path);
 
-		if (super.has(key))
-			return super.get(key);
+		if (!super.has(key)) {
+			const value = this.resolve(...path);
+			super.set(key, value);
+		}
 
-		const value = this.resolve(...path);
-		super.set(key, value);
-		return value;
+		return super.get(key);
 	}
 
 	static serializePath (path) {

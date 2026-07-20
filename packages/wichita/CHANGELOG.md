@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Script resolve method
 - Script load method
+- Support for import attributes
+- Support for JSON modules
+- Support for text modules
 
 ### Fixed
 

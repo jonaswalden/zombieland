@@ -9,6 +9,7 @@ let s = 0;
 
 export default class Script {
 	#identifier = `wichita:code(${s++})`;
+	#attributes = {};
 	#fileCache;
 	#moduleCache;
 
@@ -17,44 +18,56 @@ export default class Script {
 
 		if (args.length === 2) {
 			this.#identifier = args[0];
-			this.#fileCache.set(this.#identifier, args[1]);
+			this.#fileCache.set(this.#identifier, this.#attributes, args[1]);
 		}
 		else if (isPath(args[0]))
 			this.#identifier = args[0];
 		else
-			this.#fileCache.set(this.#identifier, args[0]);
+			this.#fileCache.set(this.#identifier, this.#attributes, args[0]);
 	}
 
 	async evaluate (context = {}) {
 		this.context = vm.isContext(context) ? context : vm.createContext(context);
 		this.#moduleCache = new Cache(this.#link.bind(this));
 
-		const module = await this.#moduleCache.lookup(this.#identifier);
+		const module = await this.#moduleCache.lookup(this.#identifier, this.#attributes);
 		module.instantiate();
 		await module.evaluate();
 		return module.namespace;
 	}
 
-	resolve (specifier, parentIdentifier) {
+	resolve (specifier, referrerIdentifier) {
 		return (/^\.*\//.test(specifier)) ?
-			path.resolve(path.dirname(parentIdentifier), specifier) :
+			path.resolve(path.dirname(referrerIdentifier), specifier) :
 			url.fileURLToPath(import.meta.resolve(specifier));
 	}
 
-	load (identifier) {
-		return fs.readFile(identifier, { encoding: 'utf8' });
+	async load (identifier, attributes) {
+		const code = await fs.readFile(identifier, { encoding: 'utf8' });
+
+		switch (attributes?.type) {
+			case 'json':
+				return 'export default JSON.parse(`' + code.replaceAll('`', '\\`') + '`)';
+			case 'text':
+				return 'export default `' + code.replaceAll('`', '\\`') + '`';
+			default:
+				return code;
+		}
 	}
 
-	async #link (identifier) {
-		const code = await this.#fileCache.lookup(identifier);
+	async #link (identifier, attributes) {
+		const code = await this.#fileCache.lookup(identifier, attributes);
 		const module = new vm.SourceTextModule(code, {
 			identifier,
 			context: this.context,
 		});
 		const moduleRequests = await Promise.all(
-			module.moduleRequests
-				.map(r => this.resolve(r.specifier, identifier))
-				.map(i => this.#moduleCache.lookup(i))
+			module.moduleRequests.map(moduleRequest => {
+				return this.#moduleCache.lookup(
+					this.resolve(moduleRequest.specifier, identifier),
+					moduleRequest.attributes
+				);
+			})
 		);
 		module.linkRequests(moduleRequests);
 		return module;

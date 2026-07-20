@@ -26,6 +26,19 @@ describe('Script', () => {
 			assert.strictEqual(dom.window.document.title, 'initial value, update from script');
 		});
 
+		it('evaluates script with exports', async function () {
+			const dom = new JSDOM('<title>with exports</title>');
+			const script = new Script(getTestPath(this), `
+				export default document.title + '?';
+				export const named = document.title + '!';
+			`);
+
+			const exports = await script.evaluate(dom.window);
+
+			assert.strictEqual(exports.default, 'with exports?');
+			assert.strictEqual(exports.named, 'with exports!');
+		});
+
 		it('evaluates script with imports', async function () {
 			const dom = new JSDOM('<title>initial value</title>');
 			const script = new Script(getTestPath(this), `
@@ -40,17 +53,17 @@ describe('Script', () => {
 			assert.strictEqual(dom.window.document.title, 'initial value, update from source component, update from package component');
 		});
 
-		it('evaluates script with exports', async function () {
-			const dom = new JSDOM('<title>with exports</title>');
+		it('evaluates script with non-js imports', async function () {
+			const dom = new JSDOM('');
 			const script = new Script(getTestPath(this), `
-				export default document.title + '?';
-				export const named = document.title + '!';
+				export { default as json } from './files/non-js-dependency.json' with { type: 'json' };
+				export { default as text } from './files/non-js-dependency.md' with { type: 'text' };
 			`);
 
 			const exports = await script.evaluate(dom.window);
 
-			assert.strictEqual(exports.default, 'with exports?');
-			assert.strictEqual(exports.named, 'with exports!');
+			assert.deepEqual(exports.json, { id: 'json-dependency' });
+			assert.strictEqual(exports.text, 'dependency of type `"text"`\n');
 		});
 
 		it('evaluates script multiple times', async function () {
