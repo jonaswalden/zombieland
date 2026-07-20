@@ -4,12 +4,40 @@ export default class Cache extends Map {
 		this.resolve = resolve;
 	}
 
-	lookup (key) {
-		let value;
+	has (...path) {
+		const key = Cache.serializePath(path);
+		return super.has(key);
+	}
+
+	get (...path) {
+		const key = Cache.serializePath(path);
+		return super.get(key);
+	}
+
+	set (...path) {
+		const value = path.pop();
+		const key = Cache.serializePath(path);
+
+		return super.set(key, value);
+	}
+
+	delete (...path) {
+		const key = Cache.serializePath(path);
+		return super.delete(key);
+	}
+
+	lookup (...path) {
+		const key = Cache.serializePath(path);
+
 		if (!super.has(key)) {
-			value = this.resolve(key);
+			const value = this.resolve(...path);
 			super.set(key, value);
 		}
-		return value ?? super.get(key);
+
+		return super.get(key);
+	}
+
+	static serializePath (path) {
+		return JSON.stringify(path);
 	}
 }

@@ -53,11 +53,11 @@ Or if you're using the `Script` module without JSDOM:
 import Script from '@zombieland/wichita/script.js';
 ```
 
-#### `new Script(filePath)`
+#### `new Script(identifier)`
 
-Creates a new Script instance from a file path.
+Creates a new Script instance from an identifier - a file path.
 
-- `filePath` `<string>` Absolute path to a JavaScript file
+- `identifier` `<string>` Identifier of script file. Required to be an absolute file path. Also used for resolving relative imports.
 
 ```js
 const script = new Script(import.meta.dirname + '/my-script.js');
@@ -79,7 +79,7 @@ const script = new Script(`
 
 Creates a new Script instance with a custom identifier from source code.
 
-- `identifier` `<string>` Script identifier. Used for resolving imports and stack traces.
+- `identifier` `<string>` Identifier of script file. Required to be an absolute file path. Also used for resolving relative imports.
 - `code` `<string>` JavaScript code to execute
 
 ```js
@@ -147,6 +147,64 @@ it('evaluates code multiple times', async () => {
   assert.equal(exports[1].default, 'twice!');
   assert.equal(exports[1].times, 1);
 });
+```
+
+#### `Script.resolve(specifier, referrerIdentifier)`
+
+The function used to resolve imports. Override to customize the regular behavior. Can be useful for stubbing packages for example. 
+
+- `specifier` `<string>` Dependency specifier to be resolved
+- `referrerIdentifier` `<string>` Identifier of the file doing the import
+- Returns: `<string>` Identifier of dependency
+
+```js
+class ScriptWithCustomResolver extends Script {
+	resolve (specifier, referrerIdentifier) {
+		if (specifier === 'some-package') {
+			return path.resolve('./test/helpers/some-package-mock.js');
+		}
+
+		return super.resolve(specifier, referrerIdentifier);
+	}
+}
+
+new ScriptWithCustomResolver(`
+	import package from 'some-package';
+
+	package();
+`)
+```
+
+#### `Script.load(identifier, attributes)`
+
+The function used to load imports in the script. Override to customize the regular behavior. Can be useful for modifying the source code before evaluating. 
+
+- `identifier` `<string>` Absolute path of the file to load
+- `attributes` `<object>` Attributes from the import statement
+- Returns: `<Promise>` Resolves with the code as a `string`
+
+```js
+class ScriptWithCustomLoader extends Script {
+	async load (identifier, attributes) {
+		const code = await super.load(identifier); 
+		return (identifier.endsWith('.jsx') || attributes.type === 'jsx') ?
+			transpileJSX(code) :
+		  code;
+	}
+}
+
+new ScriptWithCustomLoader('custom-syntax.jsx', `
+	import react from 'react';
+	import Component from './component.jsx';
+	import LibraryComponent from 'library-component' with { type: 'jsx' };
+	import { createRoot } from 'react-dom/client';
+	
+	const root = createRoot(document.body);
+	root.render(<>
+	  <Component />
+	  <LibraryComponent />
+  </>);
+`)
 ```
 
 ### `ResourceLoader`
