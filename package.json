@@ -6,7 +6,7 @@
 	"main": "zombieland.js",
 	"license": "ISC",
 	"scripts": {
-		"test": "npm test --workspaces --if-present && mocha 'examples/**/test.js'",
+		"test": "npm test --workspaces --if-present; mocha 'examples/**/test.js'",
 		"lint": "eslint ."
 	},
 	"engines": {
