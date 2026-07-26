@@ -83,7 +83,10 @@ export default class Browser {
 				const submitter = event.submitter;
 				const method = submitter?.formMethod || form.method;
 				const action = new URL(submitter?.formAction || form.action);
-				const body = new dom.window.FormData(form, submitter);
+				const body = new FormData();
+				for (const [ key, value ] of new dom.window.FormData(form, submitter)) {
+					body.append(key, value);
+				}
 
 				if (method === 'post') {
 					const enctype = submitter?.formEnctype || form.enctype;
