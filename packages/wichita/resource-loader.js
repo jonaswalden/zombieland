@@ -46,7 +46,7 @@ export default class ResourceLoader extends jsdom.ResourceLoader {
 				element.text;
 			if (!code) continue;
 
-			await new Script(src.pathname, code)
+			await new Script(src.pathname, String(code))
 				.evaluate(domContext);
 		}
 	}
