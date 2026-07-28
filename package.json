@@ -1,7 +1,7 @@
 {
 	"name": "zombieland",
 	"type": "module",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "",
 	"main": "zombieland.js",
 	"license": "ISC",
@@ -23,7 +23,7 @@
 	},
 	"dependencies": {
 		"@zombieland/little-rock": "^0.1.2",
-		"@zombieland/tallahassee": "^0.1.3",
+		"@zombieland/tallahassee": "^0.1.4",
 		"@zombieland/wichita": "^0.2.1"
 	},
 	"devDependencies": {
