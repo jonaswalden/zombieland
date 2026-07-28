@@ -2,7 +2,7 @@
   "name": "@zombieland/wichita",
   "type": "module",
   "version": "0.2.1",
-  "description": "",
+  "description": "A jsdom extension for running client side JS at a controlled time and resolving assets.",
   "main": "wichita.js",
   "exports": {
     ".": "./wichita.js",
@@ -11,8 +11,13 @@
   "engines": {
     "node": "^22.21.0 || >=24.8.0"
   },
-  "author": "",
+  "author": "Jonas Waldén",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonaswalden/zombieland.git",
+    "directory": "packages/wichita"
+  },
   "scripts": {
     "test": "mocha"
   },

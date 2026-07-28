@@ -2,7 +2,7 @@
   "name": "@zombieland/tallahassee",
   "type": "module",
   "version": "0.1.4",
-  "description": "",
+  "description": "A browser module around jsdom for testing a web application as opposed to a document. Navigation with headers, cookies, clicks and form submits.",
   "main": "tallahassee.js",
   "engines": {
     "node": "^22.20.0 || >=24.4.0"
@@ -10,8 +10,13 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
+  "author": "Jonas Waldén",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonaswalden/zombieland.git",
+    "directory": "packages/tallahassee"
+  },
   "peerDependencies": {
     "jsdom": "^27.4.0",
     "nock": "^14"

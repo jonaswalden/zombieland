@@ -2,7 +2,7 @@
   "name": "@zombieland/little-rock",
   "type": "module",
   "version": "0.1.2",
-  "description": "",
+  "description": "A jsdom extension for emulating basic layout. Useful for testing code dealing with dimensions, positions, scrolling etc.",
   "main": "little-rock.js",
   "engines": {
     "node": "^22.20.0 || >=24.4.0"
@@ -10,8 +10,13 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
+  "author": "Jonas Waldén",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonaswalden/zombieland.git",
+    "directory": "packages/little-rock"
+  },
   "dependencies": {
     "specificity": "^1.0.0"
   },

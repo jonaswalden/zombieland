@@ -2,7 +2,7 @@
 	"name": "zombieland",
 	"type": "module",
 	"version": "0.2.3",
-	"description": "",
+	"description": "A set of extensions for jsdom to test web applications from the initial request to the client side scripts.",
 	"main": "zombieland.js",
 	"license": "ISC",
 	"scripts": {
@@ -19,7 +19,7 @@
 	"author": "Jonas Waldén",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/jonaswalden/zombieland.git"
+		"url": "git+https://github.com/jonaswalden/zombieland.git"
 	},
 	"dependencies": {
 		"@zombieland/little-rock": "^0.1.2",
