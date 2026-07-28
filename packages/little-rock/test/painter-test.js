@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import Painter from '../painter.js';
-import pick from 'lodash.pick';
 import Stylesheet from '../stylesheet.js';
 import { JSDOM } from 'jsdom';
+import { object } from '../../../helpers/utils.js';
 
 describe('Painter', () => {
 	describe('Web APIs', () => {
@@ -309,19 +309,19 @@ describe('Painter', () => {
 			dom.window.scrollTo(0, 50);
 
 			assert.deepEqual(
-				pick(ancestorElement.getBoundingClientRect(), 'x', 'y'),
+				object.pick(ancestorElement.getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 0 }
 			);
 			assert.deepEqual(
-				pick(parentElement.getBoundingClientRect(), 'x', 'y'),
+				object.pick(parentElement.getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 20 }
 			);
 			assert.deepEqual(
-				pick(childElements[0].getBoundingClientRect(), 'x', 'y'),
+				object.pick(childElements[0].getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 20 }
 			);
 			assert.deepEqual(
-				pick(childElements[1].getBoundingClientRect(), 'x', 'y'),
+				object.pick(childElements[1].getBoundingClientRect(), 'x', 'y'),
 				{ x: 400, y: 20 }
 			);
 		});
@@ -331,19 +331,19 @@ describe('Painter', () => {
 			parentElement.scrollTo(400, 0);
 
 			assert.deepEqual(
-				pick(ancestorElement.getBoundingClientRect(), 'x', 'y'),
+				object.pick(ancestorElement.getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 50 }
 			);
 			assert.deepEqual(
-				pick(parentElement.getBoundingClientRect(), 'x', 'y'),
+				object.pick(parentElement.getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 20 }
 			);
 			assert.deepEqual(
-				pick(childElements[0].getBoundingClientRect(), 'x', 'y'),
+				object.pick(childElements[0].getBoundingClientRect(), 'x', 'y'),
 				{ x: -400, y: 20 }
 			);
 			assert.deepEqual(
-				pick(childElements[1].getBoundingClientRect(), 'x', 'y'),
+				object.pick(childElements[1].getBoundingClientRect(), 'x', 'y'),
 				{ x: 0, y: 20 }
 			);
 		});
