@@ -16,6 +16,6 @@
     "jsdom": "^27.4.0"
   },
   "devDependencies": {
-    "nock": "^14.0.12"
+    "nock": "^14.0.16"
   }
 }

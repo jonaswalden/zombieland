@@ -29,11 +29,11 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"chai": "^6.2.2",
-		"eslint": "^10.2.0",
-		"globals": "^17.5.0",
+		"eslint": "^10.8.0",
+		"globals": "^17.8.0",
 		"jsdom": "27",
 		"lodash.pick": "^4.4.0",
-		"mocha": "^11.7.5",
+		"mocha": "^11.7.6",
 		"mocha-cakes-2": "^3.3.0"
 	},
 	"bugs": {
